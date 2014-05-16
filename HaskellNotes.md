@@ -516,3 +516,140 @@ The Data.List module is all about lists, obviously. It provides some very useful
 	
 	let w = "w00t" in zip (inits w) (tails w)
 	[("","w00t"),("w","00t"),("w0","0t"),("w00","t"),("w00t","")]
+	
+	"cat" `isInfixOf` "im a cat burglar"
+	True
+	
+	"hey" `isPrefixOf` "oh hey there!"
+	False
+	
+`elem` and `notElem` check if an element is or isn't inside a list.
+
+Partition
+	
+	partition (`elem` ['A'..'Z']) "BOBsidneyMORGANeddy"
+	("BOBMORGAN","sidneyeddy")
+	
+	partition (>3) [1,3,5,6,3,2,1,0,3,7]
+	([5,6,7],[1,3,3,2,1,0,3])
+	
+Is different than
+	
+	span (`elem` ['A'..'Z']) "BOBsidneyMORGANeddy"
+	("BOB","sidneyMORGANeddy")
+	
+Find
+
+	find (>4) [1,2,3,4,5,6]
+	Just 5
+	
+	find (>9) [1,2,3,4,5,6] 
+	Nothing
+	
+	:t find
+	find :: (a -> Bool) -> [a] -> Maybe a
+	
+elemIndex
+
+	:t elemIndex
+	elemIndex :: (Eq a) => a -> [a] -> Maybe Int
+	4 `elemIndex` [1,2,3,4,5,6]
+	Just 3
+	10 `elemIndex` [1,2,3,4,5,6]
+	Nothing
+	
+elemIndicies
+
+	' ' `elemIndices` "Where are the spaces?"
+	[5,9,13]
+	
+findIndex and findIndicies
+
+	findIndex (==4) [5,3,2,1,6,4]
+	Just 5
+	
+	findIndex (==7) [5,3,2,1,6,4]
+	Nothing
+
+zipWith3 and zip4 (up to 7)
+
+	zipWith3 (\x y z -> x + y + z) [1,2,3] [4,5,2,2] [2,2,3]
+	[7,9,8]
+	
+	zip4 [2,3,3] [2,2,2] [5,5,3] [2,2,2]
+	[(2,2,5,2),(3,2,5,2),(3,2,3,2)]
+	
+lines
+	
+	lines "first line\nsecond line\nthird line"
+	["first line","second line","third line"]
+	
+unlines
+
+	unlines ["first line", "second line", "third line"]
+	"first line\nsecond line\nthird line\n"
+	
+words and unwords
+
+	words "hey these are the words in this sentence"
+	["hey","these","are","the","words","in","this","sentence"]
+	
+	unwords ["hey","there","mate"]
+	"hey there mate"
+	
+nub
+
+	nub [1,2,3,4,3,2,1,2,3,4,3,2,1]
+	[1,2,3,4]
+	
+	nub "Lots of words and stuff"
+	"Lots fwrdanu"
+	
+delete
+
+	delete 'h' . delete 'h' . delete 'h' $ "hey there ghang!"
+	"ey tere gang!"
+	
+\\\ (set difference)
+
+	[1..10] \\ [2,5,9]
+	[1,3,4,6,7,8,10]
+	
+union
+
+	"hey man" `union` "man what's up"
+	"hey manwt'sup"
+	
+	[1..7] `union` [5..10]
+	[1,2,3,4,5,6,7,8,9,10]
+	
+intersect
+
+	[1..7] `intersect` [5..10]
+	[5,6,7]
+	
+insert
+
+	insert 4 [3,5,1,2,8,2]
+	[3,4,5,1,2,8,2]
+	
+## 'Generic' and 'By' Forms of Functions
+
+There are functions that for historical reasons only deal with very specific types such as length.  It only deals with Int but would be more useful if it could take Num.  That is when you would use `genericLength`.  For the by forms of functions; the difference between them is that the first set of functions use == to test for equality, whereas the By ones also take an equality function and then compare them by using that equality function. group is the same as groupBy (==)
+
+## Compare \`on\` \<something\>
+
+An even clearer way to write equality functions for the By functions is if you import the on function from Data.Function
+
+	let xs = [[5,4,5,4,4],[1,2,3],[3,5,4,3],[],[2],[2,2]]
+	sortBy (compare `on` length) xs
+	[[],[2],[2,2],[1,2,3],[3,5,4,3],[5,4,5,4,4]]
+	
+# Data.Char
+
+Has a lot of functions that you would normally use regex for. Ex. `isLower`.
+
+	filter (not . any isSpace) . groupBy ((==) `on` isSpace) $ "hey guys its me"
+	["hey","guys","its","me"]
+	
+# Data.Map

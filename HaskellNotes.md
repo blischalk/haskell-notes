@@ -653,3 +653,14 @@ Has a lot of functions that you would normally use regex for. Ex. `isLower`.
 	["hey","guys","its","me"]
 	
 # Data.Map
+
+
+# Creating Types and Typeclasses
+
+    data Bool = False | True
+    
+The part after the equals are the value constructors.  They specify the different values that this type can have.  The Boolean type canhave a value of either False or True.
+
+    data Shape = Circle Float Float Float | Rectangle Float Float Float Float
+    
+The Circle and Rectangle value constructors accept floats as arguments as values they will contain.

@@ -654,7 +654,6 @@ Has a lot of functions that you would normally use regex for. Ex. `isLower`.
 	
 # Data.Map
 
-
 # Creating Types and Typeclasses
 
     data Bool = False | True
@@ -664,3 +663,146 @@ The part after the equals are the value constructors.  They specify the differen
     data Shape = Circle Float Float Float | Rectangle Float Float Float Float
     
 The Circle and Rectangle value constructors accept floats as arguments as values they will contain.
+
+#Type parameters
+A value constructor can take some values and produce a new value.  **Type Constructors** can take types to produce new types.
+
+Ex.
+
+	Data Maybe a = Nothing | Just a
+	
+"a" is a type parameter.  Since a type parameter is involved, "Maybe" is a type constructor.
+
+The type parameter is similar to generics in Java and templates in C++.
+
+If our type acts as some kind of box, its good to use type parameters.
+
+	Data Car = Car { company :: String
+	               , model :: String
+	               , year :: Int
+	               } deriving (Show)
+	               
+	Can be re-written as:
+	
+	data Car a b c = Car { company :: a
+	                     , model :: b
+	                     , year :: c
+	                     } deriving (Show)
+	                     
+	                     
+This would not really benefit us though as we'd end up defining functions that only work on Car String String Int type.
+
+A type class constraint:
+
+	data (Ord k) => Map k v = .....
+	
+**Never add typeclass constraints in data declarations!**
+
+# Derived Instances
+
+A Type Class is like an interface.  We don't make instances from them.  We create a data type and determine what it can act like.
+
+If the data type can act like something that can be equated, we make it an instance of the **Eq** typeclass.  If it can act like something that can be ordered, it should be an instance of the **Ord** typeclass.
+
+We make our data type an instance of a typeclass by
+using the **deriving** keyword.
+
+Ex.
+
+	data Person = Person { firstName :: String
+	                     , lastName :: String
+	                     , age :: Int
+	                     } deriving (Eq, Show, Read)
+	                     
+Read requires a explicit type annotation to tell Haskell which type we want to get as a result.
+
+	read "Person {firstName =\"Michael\", lastName =\"Diamond\", age = 43}" :: Person
+	
+If we use the result of our read later on in a way that Haskell can infer that it should read it as a person, we don't need the type annotation.
+
+	read "Person {firstName =\"Michael\", lastName =\"Diamond\", age = 43}" == mikeD
+	
+We can also read parameterized types, but we have to fill in the type parameters. So we can't do
+
+	read "Just 't'" :: Maybe a
+	
+	but we can do
+	
+	read "Just 't'" :: Maybe Char.
+	
+# Type Synonyms
+
+	type String = [Char]
+	
+# Defining a TypeClass
+Use class keyword followed by typeclass name and a type variable.  Where is then used to define some function type declarations and function bodies.
+
+	class Eq a where
+		(==) :: a -> a -> Bool
+		(/=) :: a -> a -> Bool
+		x == y = not (x /= y)
+		x /= y = not (x == y)
+		
+# Defining a type
+
+The part before the = denotes the type, the part(s) after are the value constructors.
+
+	data TrafficLight = Red | Yellow | Green
+	
+	data Shape = Circle Float Float Float | Rectangle Float Float Float Float
+	
+Value constructors can take some values as parameters and produce a new value.
+Type constructors can take types as parameters to product new types.
+
+	data Maybe a = Nothing | Just a
+	
+The a is a type parameter and because there is a type parameter, Maybe is a *type constructor*
+	
+Exporting the functions and types we defined in a module would look like:
+
+	module Shapes
+	( Point(..)
+	, Shape(..)
+	, surface
+	, nudge
+	, baseCircle
+	, baseRect
+	) where
+	
+# Deriving TypeClass instances by hand
+By doing this you can then override methods defined in the typeclass.
+
+	instance Eq TrafficLight where
+		Red == Red = True
+		Green == Green = True
+		Yellow == Yellow = True
+		_ == _ = False
+		
+# Monoids
+A monoid is when you have an associative binary function and a value which acts as an identity with respect to that function. When something acts as an identity with respect to a function, it means that when called with that function and some other value, the result is always equal to that other value. 1 is the identity with respect to * and [] is the identity with respect to ++.
+
+	class Monoid m where  
+    	mempty :: m  
+    	mappend :: m -> m -> m  
+    	mconcat :: [m] -> m  
+    	mconcat = foldr mappend mempty
+    	
+### Monoid Laws
+
+	mempty `mappend` x = x
+	x `mappend` mempty = x
+	(x `mappend` y) `mappend` z = x `mappend` (y `mappend` z)
+	
+## Rember fancy values, values with contexts
+
+Functor:
+
+	fmap (++"!") (Just "wisdom")
+	
+The Just "wisdom" is a fancy value and can be fmapped over so it is a functor.
+
+Applicative Functor:
+
+	 Just (+3) <*> Just 3
+	 
+Applicative Functor deals with taking a fancy value (possibly a function that is itself a fancy value) and applying it to another fancy value.

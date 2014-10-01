@@ -179,6 +179,9 @@ A *type variable* (like a generic in java) is denoted in lowercase.
     	where bmi = weight / height ^ 2 
     
 ## Let
+
+Define variables (or functions) to be used within an `in` block of code.  Similar to `where` but variables are defined before they are used as opposed to after.
+
 	cylinder :: (RealFloat a) => a -> a -> a  
 	cylinder r h = 
 		let sideArea = 2 * pi * r * h  
@@ -198,6 +201,14 @@ A *type variable* (like a generic in java) is denoted in lowercase.
 	calcBmis xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2, bmi >= 25.0]
 	
 	let boot x y z = x * y + z in boot 3 4 2
+	
+## Where
+
+Similar to `let` but allows you to define the code before the variables (or local functions) are defined.
+
+	myFunk someVal = someVal - anotherVal
+		where anotherVal = 10
+		      localFunk a = a + anotherVal
 	
 ## Case
 	describeList :: [a] -> String  

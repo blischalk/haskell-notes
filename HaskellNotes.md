@@ -1,15 +1,128 @@
 # Haskell notes
 
-:l to load file on command line
+## Types
+
+Every expression and function in Haskell has a `type`. The type of a
+value indicates that it shares certain properties with other values of
+the same type.  A type system gives us an abstraction so we can tell
+the computer these bytes are text, those bytes are a stock trade.  A
+type system prevents us from accidentally mixing types up.
+
+Haskell types are strong, static, and inferred.
+
+Explicitly writing the type of an expression occurs in the form:
+
+	expression :: type
+	'a' :: Char
+
+`:: theType` is referred to as a type signature.
+
+## Polymorphic Types
+
+To make a type polymorphic e.g., a list can of ints or a list of
+strings, you must use a `type variable`.
+
+e.x.,
+
+	myFunk :: [a] -> a
+
+## Basic Types
+
+- "foo" has type `String`
+- True has type `Bool`
+
+**Int**: guaranteed by Haskell to be at least up to ±2^29 but exact
+  size depends on system
+
+Min and Max bounds can be found with:
+
+    (minBound :: Int, maxBound :: Int)
+    
+**Integer**: is limited by the amount of memory on machine.
+
+**Double**: for floating-point numbers
+**Float**: single precision but not used much
+**Bool**: True or False
+**Char**: Unicode characters
+**String**: String.  Lists of characters
+
+
+## GHCI
+
+:l to load file (can take an absolute or relative path to source file)
+:r to reload a file
+:t for the type of something
+:k for the kind of something
+:m + to set the context for expression evaluations
+:? for a list of commands
+:info get some useful information
+:set +t (Print more type information)
+:unset + t to turn off
+:show bindings shows bound variables
+:cd change directories
+
+
+Prelude is a standard library of useful functions.  When you set the context, you will append modules to prelude.  Because the prompt will grow as modules are used, set prompt can be used:
+
+    :set prompt "ghci> "
+    
+To load another module into ghci:
+
+    :m + Control.Applicative
+	:module + Data.Ratio
+
+## Operators
+
+	==
+	<
+	>=
+	/=  -- Not equal
+	not True
+
+## Operator Fixity Rules
+
+Operators have precedence.
+use `:info operator` e.g, `:info (+)` to see precedence 1 - 9.
+Higher precedence is applied before lower.
+
+Associativity: Whether an operator is left (infixl) or right (infixr) associative. (Which direction evaluation occurs)
+
+Don't try and remember the fixity rules.  Just add parens.
+
+## Useful Info
+
+- negative numbers should mostly be surrounded with parens (-3) so that it is not evaluated as subtraction.
+- \`backticks\` make a function name into an infix operator.
+- / is for floating point division \`div\` is used for integer division.
+- fromIntegral converts any integral type (Int or Integer) to any other numeric type.
+- round, floor, and ceiling convert floating-point numbers to Int or Integer.
+- If statement is also an expression.  It will always return a value.  The else portion is mandatory.
+- `putStrLn` to print to stdout.
+
+## If statements
+
+Both branches (then, else) must have the same return type.
+
+## Data.Ratio
+
+Adds the operator % so we can have rational numbers.
+
+1 % 2  one half
+2 % 3  two thirds
+etc.
+
 
 ## The Offside Rule (Indention / Whitespace Counts)
 When you have questions about indention, look this up.  Basically indentent how you normally would and everything should be fine...
 
 ## Lists
 
-++ Put two lists together
+All elements must be of the same type.
+All elements must be separated by commas without a trailing comma.
 
-:  Put something at the beginning of a list
+++ Concatenate two lists together
+
+:  Add something to the beginning of a list
 
 !! Get element out of list by index
 
@@ -31,8 +144,8 @@ When you have questions about indention, look this up.  Basically indentent how 
 * product
 * elem - 4 \`elem\` [3,4,5,6]
 
-## Ranges
-	[..20]
+## Ranges (Enumeration)
+	[1..20]
 	[‘a’..’z’]
 	[‘K’..’Z’]
 	[2,4..20]
@@ -42,6 +155,8 @@ When you have questions about indention, look this up.  Basically indentent how 
 * cycle
 * repeat
 * replicate
+
+Beware enumerating floating point numbers
 
 ## List Comprehension
 	[x*2 | x <- [1..10]]
@@ -67,7 +182,10 @@ nested list comprehension
 	[ [ x | x <- xs, even x ] | xs <- xxs]
 
 ## Tuples
-	(“a”, “tuple”, 1)
+
+Useful for returning multiple values from a function.
+
+	("a", "tuple", 1)
 	
 	let rightTriangles' = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2, a+b+c == 24]
 
@@ -91,6 +209,8 @@ If you want to give your function a type declaration but are unsure as to what i
 
 	addThree :: Int -> Int -> Int -> Int  
 	addThree x y z = x + y + z 
+
+x :: y is read as "the expression x has type y"
 
 
 ### Common Types
@@ -155,6 +275,10 @@ Function dispatch based on parameter shape.
 	capital :: String -> String  
 	capital "" = "Empty string, whoops!"  
 	capital all@(x:xs) = "The first letter of " ++ all ++ " is " ++ [x]
+
+    bookID      (Book id title authors) = id
+	bookTitle   (Book id title authors) = title
+	bookAuthors (Book id title authors) = authors
 	
 ## Guards
 
@@ -674,11 +798,15 @@ Has a lot of functions that you would normally use regex for. Ex. `isLower`.
 
 # Creating Types and Typeclasses
 
+Bool is a `type constructor`
+
     data Bool = False | True
     
-The part after the equals are the value constructors.  They specify the different values that this type can have.  The Boolean type canhave a value of either False or True.
+The part after the equals are the value constructors.  They specify the different values that this type can have.  The Boolean type can have a value of either False or True.
 
     data Shape = Circle Float Float Float | Rectangle Float Float Float Float
+
+Shape is a `type constructor`
     
 The Circle and Rectangle value constructors accept floats as arguments as values they will contain.
 
@@ -750,6 +878,8 @@ We can also read parameterized types, but we have to fill in the type parameters
 	
 # Type Synonyms
 
+Are only for making code more readable.
+
 	type String = [Char]
 	
 # Defining a TypeClass
@@ -762,6 +892,19 @@ Use class keyword followed by typeclass name and a type variable.  Where is then
 		x /= y = not (x == y)
 		
 # Defining a type
+
+With a single constructor, a `type` is similar to a C struct.
+
+They can also act lake a C enum like:
+
+	data roygbiv = Red
+		         | Orange
+				 | Yellow
+				 | Green
+				 | Blue
+				 | Indigo
+				 | Violet
+				   deriving (Eq, Show)
 
 The part before the = denotes the type, the part(s) after are the value constructors.
 

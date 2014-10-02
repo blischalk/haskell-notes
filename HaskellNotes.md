@@ -2,6 +2,9 @@
 
 :l to load file on command line
 
+## The Offside Rule (Indention / Whitespace Counts)
+When you have questions about indention, look this up.  Basically indentent how you normally would and everything should be fine...
+
 ## Lists
 
 ++ Put two lists together
@@ -114,6 +117,8 @@ A *type variable* (like a generic in java) is denoted in lowercase.
 * Floating
 
 ## Pattern Matching
+Function dispatch based on parameter shape.
+
 	lucky :: (Integral a) => a -> String  
 	lucky 7 = "LUCKY NUMBER SEVEN!"  
 	lucky x = "Sorry, you're out of luck, pal!"
@@ -152,6 +157,8 @@ A *type variable* (like a generic in java) is denoted in lowercase.
 	capital all@(x:xs) = "The first letter of " ++ all ++ " is " ++ [x]
 	
 ## Guards
+
+Dispatch on more than just a patterns shape.  After a successful pattern match, all guards are checked and a successful guard results in that value becoming the functions return value.
 
 	bmiTell :: (RealFloat a) => a -> String  
 	bmiTell bmi  
